@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm build
+        env:
+          BASE_URL: '/${{ github.event.repository.name }}/'
+
+      - name: Add .nojekyll file
+        run: touch dist/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: gh-pages
