@@ -1,13 +1,22 @@
+# .github/workflows/deploy.yml
 name: Deploy to GitHub Pages
 
+# Controls when the workflow will run
 on:
   push:
     branches:
-      - master
+      - main
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    concurrency: ci-${{ github.ref }}  # Prevents concurrent deployments
 
     steps:
       - name: Checkout repository
@@ -39,3 +48,4 @@ jobs:
         with:
           folder: dist
           branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}  # Uses the built-in token
